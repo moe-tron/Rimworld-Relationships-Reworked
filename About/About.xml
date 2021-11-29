@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ModMetaData>
+  <name>RelationshipsReworked</name>
+  <author>gwam</author>
+  <supportedVersions>
+    <li>1.3</li>
+  </supportedVersions>
+  <packageId>gwam.RelationshipsReworked</packageId>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>erdelf.HumanoidAlienRaces</li>
+  </loadAfter>
+  <description>
+Adds a lot of configuration that will let you determine who pawns can consider for romance attempts, the attraction between pawns, and other romance factors.
+
+Why use this Mod:
+  - If you want to make every pawn Gay, Bisexual, or Asexual by default. You can make a colony of all Gay pawns without having to add the trait to everyone!
+  - You don't like your pawns becoming lovers with visiting factions.
+  - You want better HAR support for relationships between pawns.
+
+Adds:
+  - Configurable default sexualities for pawns. Traits such as Gay, Bisexual, etc. will override this but by default every pawn will have the set sexuality. 
+  - You can make the default sexuality gay, straight, bisexual, or asexual. Pawns without a sexuality trait assigned to them will default to the one chosen.
+  - Configurable romance chance factor for pawns of different factions. No longer will your pawn constantly get romance attempts from visiting factions (or they can if you want to configure it that way).
+  - Support for alien races, this mod factors in Humanoid Alien Races that are added in and shouldn't conflict too much with the features added by HAR. It also takes into account traits / memes / precepts added by HAR.
+  - Support for generated pawns being made as lovers / spouses / fiance / exlovers - now same gendered pawns can be considered based on the default sexuality you choose. You can configure the base chances for generated pawns to be created as lovers with your faction pawns as well - this way you won't keep getting raided by a Pawn's random lover.
+
+Compatability:
+  - Should be fully comptabible with Humanoid Alien Races. Load this Mod after HAR.
+  - Might work strangely with Alien races that have really long lifespans. Will edit some of the logic eventually to account for that.
+
+Incompatability:
+  - Probably not comptabible with Psychology! I've never used it but since it changes Pawn's sexuality it will likely conflict with this mod.
+  - Might conflict with other mods that try to override / patch vanilla Rimworld romancing and / or pawn sexuality.
+
+  </description>
+</ModMetaData>
