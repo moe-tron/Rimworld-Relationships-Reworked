@@ -13,8 +13,6 @@ namespace RelationshipsReworked
             Harmony harmony = new Harmony("RelationshipsReworked.Patches");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
-
-
     }
 }
     

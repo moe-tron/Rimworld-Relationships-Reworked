@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HarmonyLib;
 using RimWorld;
 using Verse;
 using UnityEngine;
 using RelationshipsReworked.Util;
+using RelationshipsReworked.Settings;
 
 namespace RelationshipsReworked.Patches
 {
@@ -21,11 +19,19 @@ namespace RelationshipsReworked.Patches
         public static void LovePartnerRelationGenerationChance(ref Pawn generated, ref Pawn other, ref PawnGenerationRequest request, ref bool ex, ref float __result) {
 			if (generated.ageTracker.AgeBiologicalYearsFloat < generated.ageTracker.AdultMinAge)
 			{
+				if (RelationshipsReworkedSettings.debug_logging)
+				{
+					Log.Message("generated pawn too young to generate relations: " + generated.Name + " and " + other.Name);
+				}
 				__result = 0f;
 				return;
 			}
 			if (other.ageTracker.AgeBiologicalYearsFloat < other.ageTracker.AdultMinAge)
 			{
+				if (RelationshipsReworkedSettings.debug_logging)
+				{
+					Log.Message("other pawn too young to generate relations: " + generated.Name + " and " + other.Name);
+				}
 				__result = 0f;
 				return;
 			}
@@ -34,54 +40,64 @@ namespace RelationshipsReworked.Patches
 			// We'll respect the allowGay setting on the generation request.
 			if (generated.gender == other.gender && (!GenUtil.gayOkay(generatedSexuality) || !GenUtil.gayOkay(otherSexuality) || !request.AllowGay))
 			{
-				__result = 0f;
+				if (RelationshipsReworkedSettings.debug_logging)
+				{
+					Log.Message("Gay Sexuality not okay, keeping default result: " + generated.Name + " and " + other.Name);
+				}
 				return;
 			}
 			if (generated.gender != other.gender && (!GenUtil.heteroOkay(generatedSexuality) || !GenUtil.heteroOkay(otherSexuality)))
 			{
-				__result = 0f;
+				if (RelationshipsReworkedSettings.debug_logging)
+				{
+					Log.Message("Hetero Sexuality not okay, keeping default result: " + generated.Name + " and " + other.Name);
+				}
 				return;
 			}
 
-			float num = 1f;
+			float xFactor = 1f;
 			if (ex)
 			{
-				int num2 = 0;
+				int exes = 0;
 				List<DirectPawnRelation> directRelations = other.relations.DirectRelations;
 				for (int i = 0; i < directRelations.Count; i++)
 				{
 					if (LovePartnerRelationUtility.IsExLovePartnerRelation(directRelations[i].def))
 					{
-						num2++;
+						exes++;
 					}
 				}
-				num = Mathf.Pow(0.2f, num2);
+				xFactor = Mathf.Pow(0.2f, exes);
 			}
 			else if (LovePartnerRelationUtility.HasAnyLovePartner(other, true))
 			{
                 __result = 0f;
 				return;
 			}
-			float num3 = (generated.gender == other.gender) ? 0.01f : 1f;
 			float generationChanceAgeFactor = LovePartnerRelationUtility_LovePartnerRelationGenerationChancePatch.GetGenerationChanceAgeFactor(generated);
 			float generationChanceAgeFactor2 = LovePartnerRelationUtility_LovePartnerRelationGenerationChancePatch.GetGenerationChanceAgeFactor(other);
 			float generationChanceAgeGapFactor = LovePartnerRelationUtility_LovePartnerRelationGenerationChancePatch.GetGenerationChanceAgeGapFactor(generated, other, ex);
-			float num4 = 1f;
+			float bloodRelationsFactor = 1f;
 			if (generated.GetRelations(other).Any((PawnRelationDef x) => x.familyByBloodRelation))
 			{
-				num4 = 0.01f;
+				bloodRelationsFactor = 0.01f;
 			}
-			float num5;
+
+			float melaninFactor;
 			// TODO when I'm not so lazy check and see if HAR does anything unique here when it factors in melanin.
 			if (request.FixedMelanin != null)
 			{
-				num5 = ChildRelationUtility.GetMelaninSimilarityFactor(request.FixedMelanin.Value, other.story.melanin);
+				melaninFactor = ChildRelationUtility.GetMelaninSimilarityFactor(request.FixedMelanin.Value, other.story.melanin);
 			}
 			else
 			{
-				num5 = PawnSkinColors.GetMelaninCommonalityFactor(other.story.melanin);
+				melaninFactor = PawnSkinColors.GetMelaninCommonalityFactor(other.story.melanin);
 			}
-			__result = num * generationChanceAgeFactor * generationChanceAgeFactor2 * generationChanceAgeGapFactor * num3 * num5 * num4;
+			__result = xFactor * generationChanceAgeFactor * generationChanceAgeFactor2 * generationChanceAgeGapFactor * melaninFactor * bloodRelationsFactor;
+			if (RelationshipsReworkedSettings.debug_logging)
+            {
+				Log.Message("Final Chance for generation lovers between: " + generated.Name + " and " + other.Name + " is " + __result.ToString("0.00"));
+			}
 		}
 
 

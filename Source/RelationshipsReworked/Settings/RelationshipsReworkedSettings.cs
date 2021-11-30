@@ -20,7 +20,7 @@ namespace RelationshipsReworked.Settings
 			Scribe_Values.Look<bool>(ref RelationshipsReworkedSettings.default_asexual, "default_asexual", false, true);
 			Scribe_Values.Look<float>(ref RelationshipsReworkedSettings.outside_faction_factor, "outside_faction_factor", 0.1f, true);
 			Scribe_Values.Look<float>(ref RelationshipsReworkedSettings.romance_attempt_factor, "romance_attempt_factor", 1f, true);
-			Scribe_Values.Look<bool>(ref RelationshipsReworkedSettings.vanilla_age_requirements, "vanilla_age_requirements", false, true);
+			Scribe_Values.Look<float>(ref RelationshipsReworkedSettings.fat_pawn_attractiveness_factor, "fat_pawn_attractiveness_factor", 0.25f, true);
 			Scribe_Values.Look<bool>(ref RelationshipsReworkedSettings.debug_logging, "debug_logging", false, true);
 		}
 
@@ -74,11 +74,15 @@ namespace RelationshipsReworked.Settings
 			listing_Standard.Label("Mixed faction romance factor: " + outside_faction_factor.ToString("0.00"), -1f, "Higher values increase the likelihood of romance attempts with pawns of differnet factions.");
 			outside_faction_factor = listing_Standard.Slider(outside_faction_factor, 0f, 1f);
 			listing_Standard.Gap(4f);
+			listing_Standard.Label("Fat romance factor: " + fat_pawn_attractiveness_factor.ToString("0.00"), -1f, "Lower values mean that fat pawns will be seen as less attractive to other pawns - decreasing chances for a pawn to attempt romance with one.");
+			fat_pawn_attractiveness_factor = listing_Standard.Slider(fat_pawn_attractiveness_factor, 0f, 1f);
+			listing_Standard.Gap(4f);
 			// Disabling this for now! Might enable later
 			//listing_Standard.Label("Likeliness of romance attempt factor: " + romance_attempt_factor.ToString("0.00"), -1, "Higher values mean that pawns are more likely to try and romance others. 1 is the default.");
 			//romance_attempt_factor = listing_Standard.Slider(romance_attempt_factor, 0f, 2f);
-			listing_Standard.CheckboxLabeled("Use vanilla age requirements for romance", ref vanilla_age_requirements, "This mod uses the race's configured adult age, for humans it is 18. Vanilla rimworld uses 16 as the min age for romancing / loving, check this if you'd rather the min age be 16 regardless of race.");
-			listing_Standard.Gap(4f);
+			// Also disabling this for now
+			//listing_Standard.CheckboxLabeled("Use vanilla age requirements for romance", ref vanilla_age_requirements, "This mod uses the race's configured adult age, for humans it is 18. Vanilla rimworld uses 16 as the min age for romancing / loving, check this if you'd rather the min age be 16 regardless of race.");
+			//listing_Standard.Gap(4f);
 			listing_Standard.CheckboxLabeled("Enable Debug Logging", ref debug_logging, "You probably don't want this enabled.");
 			listing_Standard.End();
 		}
@@ -94,7 +98,7 @@ namespace RelationshipsReworked.Settings
 		// Misc options
 		public static float outside_faction_factor = 0.1f;
 		public static float romance_attempt_factor = 1f;
-		public static bool vanilla_age_requirements = false;
 		public static bool debug_logging = false;
+		public static float fat_pawn_attractiveness_factor = 0.25f;
 	}
 }

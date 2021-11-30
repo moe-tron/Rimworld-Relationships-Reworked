@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Verse;
 using RimWorld;
-using RelationshipsReworked.Util; 
+using RelationshipsReworked.Util;
 
 namespace RelationshipsReworked.Patches
 {
-	[HarmonyPatch(typeof(CompAbilityEffect_WordOfLove), "ValidateTarget")]
+    [HarmonyPatch(typeof(CompAbilityEffect_WordOfLove), "ValidateTarget")]
 	[HarmonyPriority(Priority.High)]
-	internal static class CompAbilityEffect_WordOfLove_ValidateTargetPatch
+	public class CompAbilityEffect_WordOfLove_ValidateTargetPatch
 	{
 		// Pretty sure this needs to be a prefix to prevent the unusable message from the original method.
 		[HarmonyPrefix]

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using RimWorld;
 using Verse;
 using RelationshipsReworked.Util;
@@ -12,9 +7,9 @@ using HarmonyLib;
 
 namespace RelationshipsReworked.Patches
 {
-	// Not sure if I should have just subclassed instead. Regardless, this will probably overwrite anything done by other mods beforehand, but that's intended.
-	// HAR patches this, but we're doing the same stuff in regards to checking the species so it's probably fine.
-	[HarmonyPatch(typeof(InteractionWorker_RomanceAttempt), "RandomSelectionWeight", null)]
+    // Not sure if I should have just subclassed instead. Regardless, this will probably overwrite anything done by other mods beforehand, but that's intended.
+    // HAR patches this, but we're doing the same stuff in regards to checking the species so it's probably fine.
+    [HarmonyPatch(typeof(InteractionWorker_RomanceAttempt), "RandomSelectionWeight", null)]
 	[HarmonyPriority(Priority.Last)]
 	public class InteractionWorker_RomanceAttemptPatch
     {

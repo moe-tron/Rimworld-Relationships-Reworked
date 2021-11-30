@@ -14,7 +14,7 @@ using RelationshipsReworked.Settings;
 namespace RelationshipsReworked.Patches
 {
     [HarmonyPatch(typeof(Pawn_RelationsTracker), "SecondaryLovinChanceFactor", null)]
-    class Pawn_RelationsTrackerSecondaryLovinChanceFactorPatch
+    public class Pawn_RelationsTrackerSecondaryLovinChanceFactorPatch
     {
 
         // This is a factor for lovin' but it's used in vanilla rimworld for a lot of romance interaction stuff.
@@ -60,12 +60,18 @@ namespace RelationshipsReworked.Patches
             }
 
             // Similar to vanilla rimworld, except males and females have the same preferance.
-            // TODO change this to factor in races that have extremely old ages, maybe be a percentage of total lifespan?
-            float ageMin = Math.Max(18f, pawn.ageTracker.AgeBiologicalYearsFloat - 30f);
-            float ageLower = Math.Max(18f, pawn.ageTracker.AgeBiologicalYearsFloat - 10f);
-            float ageUpper = pawn.ageTracker.AgeBiologicalYearsFloat + 10f;
-            float ageMax = pawn.ageTracker.AgeBiologicalYearsFloat + 30f;
-            float ageFactor = GenMath.FlatHill(0.15f, ageMin, ageLower, ageUpper, ageMax, 0.15f, ageBioYearsOtherPawn);
+            // Factors in the fraction of the pawn's total lifespan rather than direct ages.
+            float pawnMaxLifespan = pawn.RaceProps.lifeExpectancy;
+            float otherPawnMaxLifespan = otherPawn.RaceProps.lifeExpectancy;
+
+            float pawnRatioOfLifespan = ageBioYearsPawn / pawnMaxLifespan;
+            float otherPawnRatioOfLifespan = ageBioYearsOtherPawn / otherPawnMaxLifespan;
+
+            float ageRatioMin = Math.Max(0f, pawnRatioOfLifespan - 0.4f); // Should be fine as 0 since we return early if either pawn hasn't reached adulthood.
+            float ageRatioLower = Math.Max(0f, pawnRatioOfLifespan - 0.15f);
+            float ageRatioUpper = pawnRatioOfLifespan + 0.15f;
+            float ageRatioMax = pawnRatioOfLifespan + 0.4f;
+            float ageFactor = GenMath.FlatHill(0.15f, ageRatioMin, ageRatioLower, ageRatioUpper, ageRatioMax, 0.15f, otherPawnRatioOfLifespan);
 
             float beautyFactor =  BeautyCurve.Evaluate(otherPawn.GetStatValue(StatDefOf.Beauty));
 
@@ -74,14 +80,18 @@ namespace RelationshipsReworked.Patches
 
             float factionFactor = pawn.Faction == otherPawn.Faction ? 1f : RelationshipsReworkedSettings.outside_faction_factor;
 
-            // TODO factor in races at some point as well as traits like xenophile, xenophobe
-            __result = ageFactor * beautyFactor * factionFactor * genderFactor * speciesFactor;
+            // Not sure if any other body types should be taken into account.
+
+            float bodyTypeFactor = otherPawn.story != null && otherPawn.story.bodyType == BodyTypeDefOf.Fat ? RelationshipsReworkedSettings.fat_pawn_attractiveness_factor : 1f;
+
+
+            __result = ageFactor * beautyFactor * factionFactor * genderFactor * speciesFactor * bodyTypeFactor;
         }
 
         // Curve for evaluating pawn's beauty
         // Should support mods that change the beauty stat for pawns
         // Idea here is that beauty increases sharply as Pawns get prettier but tapers off at higher levels of beauty.
-        // Maxes out at beauty value of 3.0 w/ a factor of 2.3 (max in vanilla rimworld)
+        // Maxes out at beauty value of 3.0 w/ a factor of 2.5
         private static readonly SimpleCurve BeautyCurve = new SimpleCurve
         {
             {
@@ -101,11 +111,11 @@ namespace RelationshipsReworked.Patches
                 true
             },
             {
-                new CurvePoint(2f, 2f),
+                new CurvePoint(2f, 2.3f),
                 true
             },
             {
-                new CurvePoint(3f, 2.3f),
+                new CurvePoint(3f, 2.5f),
                 true
             }
         };
